@@ -36,19 +36,14 @@ class Server:
             layers.BatchNormalization(renorm=True),
             layers.Flatten(),
             layers.Dense(128, activation='relu'),
-            layers.Dense(10, activation='sigmoid'),
+            layers.Dense(10),
         ])
 
         self.model.compile(
             optimizer='adam',
-            loss='binary_crossentropy',
+            loss=keras.losses.SparseCategoricalCrossentropy(from_logits=True),  # 'binary_crossentropy',
             metrics=['binary_accuracy'],
         )
-
-    def update_model(self):
-        """ This function optimizes the model parameters based on calculated gradients"""
-
-        self.model.optimizer.apply_gradients(zip(self.global_grads, self.model.trainable_weights))
 
     def aggregate_grads(self, grads_list):
         """ This function aggregates the received gradients from data holder parties"""
@@ -67,7 +62,7 @@ class Server:
         # aggregate grads
         self.aggregate_grads(grads_list)
         # update model based on received grads
-        self.update_model()
+        self.model.optimizer.apply_gradients(zip(self.global_grads, self.model.trainable_weights))
         # update self.global_model_parameters
         self.global_model_parameters = self.model.get_weights()
         # share/send global_model_parameters to interface/data holder parties

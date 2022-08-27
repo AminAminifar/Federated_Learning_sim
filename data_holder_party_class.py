@@ -10,20 +10,16 @@ class Party:
     def __init__(self, data, data_labels, tf_seed):
         self.data = data
         self.data_labels = data_labels
-        self.model = None
-        self.define_model()
-
         # Instantiate a loss function.
         self.loss_fn = keras.losses.SparseCategoricalCrossentropy(from_logits=True)
-
+        self.model = self.define_model()
         self.grads = None
-
         tf.random.set_seed(tf_seed)
 
     def define_model(self):
         """ This function generates the NN model"""
 
-        self.model = keras.Sequential([
+        model = keras.Sequential([
             layers.InputLayer(input_shape=[28, 28]),
 
             #             # Data Augmentation
@@ -39,14 +35,16 @@ class Party:
             layers.BatchNormalization(renorm=True),
             layers.Flatten(),
             layers.Dense(128, activation='relu'),
-            layers.Dense(10, activation='sigmoid'),
+            layers.Dense(10),
+
         ])
 
-        self.model.compile(
+        model.compile(
             optimizer='adam',
-            loss='binary_crossentropy',
+            loss=self.loss_fn,  # 'binary_crossentropy',
             metrics=['binary_accuracy'],
         )
+        return model
 
     def calculate_gradients(self, x, y):
         """ This function calculate gradients for one round of feedforward and back propagation """
@@ -64,7 +62,7 @@ class Party:
             # update local model by global_model_parameters
             self.model.set_weights(global_model_parameters)
         # calculate gradients
-        self.calculate_gradients(self, self.data, self.data_labels)
+        self.calculate_gradients(self.data, self.data_labels)
         # share grads
         return self.grads
 

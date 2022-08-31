@@ -32,11 +32,16 @@ buf = f.read(num_images)
 train_labels = np.frombuffer(buf, dtype=np.uint8).astype(np.int64)
 # print(labels)
 
+# data information
+num_train_records = 60000
+train_data_record_indices = range(0, num_train_records)
+train_data_record_indices_shuffled = shuffle(train_data_record_indices, random_state=0)
+
 
 def generate_parties(num_data_holder_parties, tf_seed):
-    num_train_records = 60000
-    train_data_record_indices = range(0, num_train_records)
-    train_data_record_indices_shuffled = shuffle(train_data_record_indices, random_state=0)
+    """ This function generates data holder parties and return a list of generated parties"""
+
+    # indices of training data samples for each data holder party
     chunk_indices = np.array_split(train_data_record_indices_shuffled, num_data_holder_parties)
 
     parties = []

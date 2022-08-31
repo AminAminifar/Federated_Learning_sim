@@ -37,12 +37,13 @@ class Server:
             layers.Flatten(),
             layers.Dense(128, activation='relu'),
             layers.Dense(10),
+
         ])
 
         self.model.compile(
             optimizer='adam',
             loss=keras.losses.SparseCategoricalCrossentropy(from_logits=True),  # 'binary_crossentropy',
-            metrics=['binary_accuracy'],
+            metrics=['accuracy'],
         )
 
     def aggregate_grads(self, grads_list):

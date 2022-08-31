@@ -41,13 +41,13 @@ class Party:
 
         model.compile(
             optimizer='adam',
-            loss=self.loss_fn,  # 'binary_crossentropy',
-            metrics=['binary_accuracy'],
+            loss=self.loss_fn,  # 'binary_crossentropy', categorical_crossentropy
+            metrics=['accuracy'],
         )
         return model
 
     def calculate_gradients(self, x, y):
-        """ This function calculate gradients for one round of feedforward and back propagation """
+        """ This function calculates gradients for one round of feedforward and back propagation """
 
         with tf.GradientTape() as tape:
             logits = self.model(x, training=True)

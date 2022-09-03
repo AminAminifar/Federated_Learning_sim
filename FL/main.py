@@ -36,7 +36,7 @@ buf = f.read(num_images)
 test_labels = np.frombuffer(buf, dtype=np.uint8).astype(np.int64)
 # print(labels)
 
-# define the model only or evaluation
+# define the model only for evaluation
 model = keras.Sequential([
     layers.InputLayer(input_shape=[28, 28]),
 
@@ -66,7 +66,7 @@ model.compile(
 
 
 tf_seed = 0
-num_data_holder_parties = 2
+num_data_holder_parties = 5
 
 # generate/instantiate parties
 data_holder_parties_all = generate_parties.generate_parties(num_data_holder_parties=num_data_holder_parties,

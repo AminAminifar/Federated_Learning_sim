@@ -56,6 +56,9 @@ class Server:
             for j in range(0, len(self.global_grads)):
                 self.global_grads[j] += temp[j]
 
+        # for j in range(0, len(self.global_grads)):
+        #     self.global_grads[j] /= self.num_data_holder_parties
+
     def interface_pipeline(self, grads_list):
         """ This can be called by interface """
 

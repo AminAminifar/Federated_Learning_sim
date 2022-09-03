@@ -14,7 +14,8 @@ class Party:
         self.loss_fn = keras.losses.SparseCategoricalCrossentropy(from_logits=True)
         self.model = self.define_model()
         self.grads = None
-        tf.random.set_seed(tf_seed)
+        self.tf_seed = tf_seed
+
 
     def define_model(self):
         """ This function generates the NN model"""
@@ -61,6 +62,8 @@ class Party:
             #  receive global model parameters
             # update local model by global_model_parameters
             self.model.set_weights(global_model_parameters)
+        else:
+            tf.random.set_seed(self.tf_seed)
         # calculate gradients
         self.calculate_gradients(self.data, self.data_labels)
         # share grads

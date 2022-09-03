@@ -66,8 +66,8 @@ model.compile(
 
 
 tf_seed = 0
-num_data_holder_parties = 2
-num_local_updates = 1
+num_data_holder_parties = 5
+num_local_updates = 3
 
 # generate/instantiate parties
 data_holder_parties_all = generate_parties.generate_parties(num_data_holder_parties=num_data_holder_parties,

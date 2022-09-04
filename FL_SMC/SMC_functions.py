@@ -115,7 +115,8 @@ class SMCtools:
                 if self.SSA_self_state[ID] is not None:
                     np.random.set_state(self.SSA_self_state[ID])
 
-                rnd_sum += np.random.rand(*rnd_vec_shape)
+                # rnd_sum += np.random.rand(*rnd_vec_shape)
+                rnd_sum += np.random.uniform(low=0, high=max_val, size=rnd_vec_shape)
 
                 self.SSA_self_state[ID] = np.random.get_state()
                 # !!! USING PARTICULAR RANDOM SEED AND STATE !!!
@@ -127,7 +128,8 @@ class SMCtools:
                 if self.SSA_others_state[ID] is not None:
                     np.random.set_state(self.SSA_others_state[ID])
 
-                rnd_sum += np.random.rand(*rnd_vec_shape)
+                # rnd_sum += np.random.rand(*rnd_vec_shape)
+                rnd_sum += np.random.uniform(low=0, high=max_val, size=rnd_vec_shape)
 
                 self.SSA_others_state[ID] = np.random.get_state()
                 # !!! USING PARTICULAR RANDOM SEED AND STATE !!!

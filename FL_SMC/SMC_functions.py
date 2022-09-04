@@ -2,38 +2,27 @@ import numpy as np
 import random
 import copy
 import os
+import tensorflow as tf
 
 
 class SMCtools:
     def __init__(self, num_parties, party_id, num_participating_parties, secure_aggregation_parameter_k, scenario):
-        # self.num_target_classes = num_target_classes
-        # self.num_criteria = num_criteria
         self.num_parties = num_parties
         self.party_ID = int(party_id)
         self.num_participating_parties = num_participating_parties  # all parties in this case
         self.participating_parties = []
+        self.identify_participating_parties()
         self.Secure_Aggregation_Parameter_k = secure_aggregation_parameter_k
-        # self.SPP = spp  # not applicable here
-        # self.SPP_state = None  # not applicable here
-        # self.SSP_self = None   # not applicable here
-        # self.SSP_others = []  # not applicable here
         self.SSA_self = []
         self.SSA_others = []
-        # self.SSP_self_state = None  # not applicable here
-        # self.SSP_others_state = []  # None  # not applicable here
         self.SSA_self_state = []  # None
         self.SSA_others_state = []  # None
-        # self.set_self_seeds()  # not applicable here
         self.scenario = scenario
         self.set_seeds_from_file()
 
-    # def set_self_seeds(self):  # not applicable here
-    #     self.SSP_self = np.random.randint(10 ** 8, size=1)[0]
-    #     for i in range(0, self.num_parties):  # one more but not used
-    #         self.SSA_self.append(np.random.randint(10 ** 8, size=1)[0])
-    #         self.SSA_self_state.append(None)
 
     def set_seeds_from_file(self):
+        """ Reading and setting seeds for secure aggregation (SSA) from .txt file """
 
         # root = os.path.normpath(os.getcwd() + os.sep + os.pardir)
         scenario_path = os.path.join("Scenario", "Scenario {}".format(self.scenario))
@@ -55,18 +44,8 @@ class SMCtools:
 
         parties = list(range(0, self.num_parties))
 
-        # # !!! USING PARTICULAR RANDOM SEED AND STATE !!!
-        # random.seed(self.SPP)
-        # if self.SPP_state is not None:
-        #     random.setstate(self.SPP_state)
-        # random.shuffle(parties)
-        # self.SPP_state = random.getstate()
-        # # !!! USING PARTICULAR RANDOM SEED AND STATE !!!
-
         participating_parties_ids = parties[0: self.num_participating_parties]
         self.participating_parties = np.sort(participating_parties_ids)
-
-        return
 
     def exclude_my_id(self, party_ids):
         """ If my ID is among the received IDs, this function will remove it
@@ -98,14 +77,6 @@ class SMCtools:
         participating_parties_temp = copy.deepcopy(self.participating_parties)
         participating_parties_temp = self.exclude_my_id(participating_parties_temp)
 
-        # # !!! USING PARTICULAR RANDOM SEED AND STATE !!!
-        # random.seed(self.SSP_self)
-        # if self.SSP_self_state is not None:
-        #     random.setstate(self.SSP_self_state)
-        # random.shuffle(participating_parties_temp)
-        # self.SSP_self_state = random.getstate()
-        # # !!! USING PARTICULAR RANDOM SEED AND STATE !!!
-
         peer_parties = participating_parties_temp[0: self.Secure_Aggregation_Parameter_k + 1]
         peer_parties = np.array(peer_parties)
         peer_parties = np.sort(peer_parties)
@@ -121,14 +92,6 @@ class SMCtools:
         for ID in self.participating_parties:
             participating_parties_temp = copy.deepcopy(self.participating_parties)
 
-            # # !!! USING PARTICULAR RANDOM SEED AND STATE !!!
-            # random.seed(self.SSP_others[ID])
-            # if self.SSP_others_state[ID] is not None:
-            #     random.setstate(self.SSP_others_state[ID])
-            # random.shuffle(participating_parties_temp)
-            # self.SSP_others_state[ID] = random.getstate()
-            # # !!! USING PARTICULAR RANDOM SEED AND STATE !!!
-
             participating_parties_temp = participating_parties_temp[0: self.Secure_Aggregation_Parameter_k + 1]
             if self.check_my_presence(participating_parties_temp):
                 peer_parties.append(ID)
@@ -136,44 +99,42 @@ class SMCtools:
         peer_parties = np.array(peer_parties)
         return peer_parties
 
-    def generate_and_aggregate_random_masks(self, party_ids, mask_type):
+    def generate_and_aggregate_random_masks(self, rnd_vec_shape, party_ids, mask_type):
         """ Generates random masks based on the received IDs, seeds, and states
         Input: party_IDs, mask_type= 'self' or 'others'
         Output: rnd_sum """
 
-        rnd_sum = np.zeros((self.num_criteria, self.num_target_classes))
+        rnd_sum = np.zeros(rnd_vec_shape)
         max_val = 10 ** 7  # this can be changed (by user)
 
         if mask_type == 'self':
             for ID in party_ids:
                 # !!! USING PARTICULAR RANDOM SEED AND STATE !!!
-                random.seed(self.SSA_self[ID])
+                np.random.seed(self.SSA_self[ID])
 
                 if self.SSA_self_state[ID] is not None:
-                    random.setstate(self.SSA_self_state[ID])
+                    np.random.set_state(self.SSA_self_state[ID])
 
-                rnd_sum += [[random.randint(0, max_val) for p in range(0, self.num_target_classes)]
-                            for q in range(0, self.num_criteria)]
+                rnd_sum += np.random.rand(*rnd_vec_shape)
 
-                self.SSA_self_state[ID] = random.getstate()
+                self.SSA_self_state[ID] = np.random.get_state()
                 # !!! USING PARTICULAR RANDOM SEED AND STATE !!!
         elif mask_type == 'others':
             for ID in party_ids:
                 # !!! USING PARTICULAR RANDOM SEED AND STATE !!!
-                random.seed(self.SSA_others[ID])
+                np.random.seed(self.SSA_others[ID])
 
                 if self.SSA_others_state[ID] is not None:
-                    random.setstate(self.SSA_others_state[ID])
+                    np.random.set_state(self.SSA_others_state[ID])
 
-                rnd_sum += [[random.randint(0, max_val) for p in range(0, self.num_target_classes)]
-                            for q in range(0, self.num_criteria)]
+                rnd_sum += np.random.rand(*rnd_vec_shape)
 
-                self.SSA_others_state[ID] = random.getstate()
+                self.SSA_others_state[ID] = np.random.get_state()
                 # !!! USING PARTICULAR RANDOM SEED AND STATE !!!
 
         return rnd_sum
 
-    def generate_mask(self):
+    def generate_mask(self, rnd_vec_shape):
         """ Generate masks based on the seeds
         Input: no input
         Output: masks to be used mask my secret values """
@@ -183,7 +144,8 @@ class SMCtools:
         identified_parties_self = self.exclude_my_id(identified_parties_self)
 
         # calculate rnd_sum_self
-        rnd_sum_self = self.generate_and_aggregate_random_masks(party_ids=identified_parties_self, mask_type='self')
+        rnd_sum_self = self.generate_and_aggregate_random_masks(rnd_vec_shape=rnd_vec_shape,
+                                                                party_ids=identified_parties_self, mask_type='self')
 
         # identify parties which I need to collaborate for Secure Aggregation
         identified_parties_others = self.identify_parties_others()
@@ -191,23 +153,26 @@ class SMCtools:
 
         # calculate rnd_sum_others
         rnd_sum_others = \
-            self.generate_and_aggregate_random_masks(party_ids=identified_parties_others, mask_type='others')
+            self.generate_and_aggregate_random_masks(rnd_vec_shape=rnd_vec_shape,
+                                                     party_ids=identified_parties_others, mask_type='others')
 
         return rnd_sum_self, rnd_sum_others
 
-    def mask(self, true_set_classes, false_set_classes):
+    def mask(self, grads):
         """ Generates and adds the masks to the received values
-        input: >>>true_set_classes, false_set_classes
-        Output: >>>masked true_set_classes, false_set_classes """
+        input: gradients
+        Output: masked gradients """
 
-        rnd_sum_self, rnd_sum_others = self.generate_mask()
+        for i in range(len(grads)):
+            grads_vec = grads[i]
+            rnd_vec_shape = tf.shape(grads[i])
+            rnd_sum_self, rnd_sum_others = self.generate_mask(rnd_vec_shape)
 
-        # TO Be Changed
-        true_set_classes += rnd_sum_others
-        false_set_classes += rnd_sum_others
-        true_set_classes -= rnd_sum_self
-        false_set_classes -= rnd_sum_self
-        return true_set_classes, false_set_classes
+            # masking
+            grads[i] += rnd_sum_others
+            grads[i] -= rnd_sum_self
+
+        return grads
 
     def update_seeds_sates(self):
         """ To update the random function's state for different seeds when I am not participating in this round

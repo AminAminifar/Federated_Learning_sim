@@ -71,8 +71,10 @@ class Party:
             tf.random.set_seed(self.tf_seed)
         # calculate gradients
         self.calculate_gradients(self.data, self.data_labels)
-        # share grads
-        return self.grads
+        # mask grads
+        masked_grads = self.SMC_tools.mask(self.grads)
+        # share masked grads
+        return masked_grads
 
 
 

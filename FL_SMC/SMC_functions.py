@@ -35,10 +35,10 @@ class SMCtools:
 
     def set_seeds_from_file(self):
 
-        root = os.path.normpath(os.pardir)  # os.getcwd() + os.sep + os.pardir
+        # root = os.path.normpath(os.getcwd() + os.sep + os.pardir)
         scenario_path = os.path.join("Scenario", "Scenario {}".format(self.scenario))
         seeds_folder_path = os.path.join(scenario_path, "Seeds")
-        src_path = os.path.join(root, seeds_folder_path)
+        src_path = os.path.join(seeds_folder_path)  # root,
         seeds_path = os.path.join(src_path, str(self.party_ID) + '.txt')
         seeds_mat = np.loadtxt(seeds_path, dtype=str).astype(int)
 

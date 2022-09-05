@@ -105,7 +105,8 @@ class SMCtools:
         Output: rnd_sum """
 
         rnd_sum = np.zeros(rnd_vec_shape)
-        max_val = 10 ** 3  # this can be changed (by user)
+        max_val = 10 ** 4  # this can be changed (by user)
+        min_val = -1 * max_val
 
         if mask_type == 'self':
             for ID in party_ids:
@@ -116,7 +117,7 @@ class SMCtools:
                     np.random.set_state(self.SSA_self_state[ID])
 
                 # rnd_sum += np.random.rand(*rnd_vec_shape)
-                rnd_sum += np.random.uniform(low=0, high=max_val, size=rnd_vec_shape)
+                rnd_sum += np.random.uniform(low=min_val, high=max_val, size=rnd_vec_shape)
 
                 self.SSA_self_state[ID] = np.random.get_state()
                 # !!! USING PARTICULAR RANDOM SEED AND STATE !!!
@@ -129,7 +130,7 @@ class SMCtools:
                     np.random.set_state(self.SSA_others_state[ID])
 
                 # rnd_sum += np.random.rand(*rnd_vec_shape)
-                rnd_sum += np.random.uniform(low=0, high=max_val, size=rnd_vec_shape)
+                rnd_sum += np.random.uniform(low=min_val, high=max_val, size=rnd_vec_shape)
 
                 self.SSA_others_state[ID] = np.random.get_state()
                 # !!! USING PARTICULAR RANDOM SEED AND STATE !!!
@@ -164,6 +165,7 @@ class SMCtools:
         """ Generates and adds the masks to the received values
         input: model parameters
         Output: masked model parameters """
+
 
         for i in range(len(model_parameters)):
 

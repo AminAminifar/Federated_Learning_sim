@@ -1,4 +1,4 @@
-# Federated Learning
+# Federated Learning (Simulation)
 
 Please run main.py in each folder.
 

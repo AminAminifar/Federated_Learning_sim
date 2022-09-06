@@ -81,7 +81,7 @@ server_party = server_party_class.Server(num_data_holder_parties=num_data_holder
 
 # repeat training process (as the interface)
 global_model_parameters = None
-num_epoch = 10  # 100
+num_epoch = 100  # 100
 test_loss, test_acc = np.zeros(num_epoch), np.zeros(num_epoch)
 for epoch in range(num_epoch):
     print("iteration", epoch)

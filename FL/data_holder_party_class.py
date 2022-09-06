@@ -22,15 +22,15 @@ class Party:
         def my_init(shape, dtype=None):
             return tf.keras.backend.random_normal(shape, dtype=dtype, seed=self.tf_seed)
         # initializer = tf.keras.initializers.GlorotUniform(seed=self.tf_seed)
-        # initializer = tf.keras.initializers.Zeros()
+        initializer = tf.keras.initializers.Zeros()
         model = keras.Sequential([
             layers.InputLayer(input_shape=[28, 28]),
 
             # Head
             layers.BatchNormalization(renorm=True),
             layers.Flatten(),
-            layers.Dense(128, activation='relu', kernel_initializer=my_init),
-            layers.Dense(10, kernel_initializer=my_init),
+            layers.Dense(128, activation='relu', kernel_initializer=initializer),  # my_init (for no simulation)
+            layers.Dense(10, kernel_initializer=initializer),  # my_init (for no simulation)
 
         ])
 

@@ -8,6 +8,6 @@ Federated learning with local model updates on each data holder party (FL_LocalU
 
 Federated learning with a layer of secure multiparty computation (SMC) for aggregation of gradients (FL_SMC)
 
-Federated learning with local model updates on each data holder party with a layer of secure multiparty computation (SMC) for aggregation of model parameters(FL_LocalUpdate_SMC)
+Federated learning with local model updates on each data holder party with a layer of secure multiparty computation (SMC) for aggregation of model parameters (FL_LocalUpdate_SMC)
 
 Data: https://github.com/zalandoresearch/fashion-mnist/tree/master/data/fashion

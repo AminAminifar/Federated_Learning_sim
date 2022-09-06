@@ -12,10 +12,10 @@ class Party:
         self.data_labels = data_labels
         # Instantiate a loss function.
         self.loss_fn = keras.losses.SparseCategoricalCrossentropy(from_logits=True)
-        self.model = self.define_model()
         self.grads = None
         self.num_local_updates = num_local_updates
         self.tf_seed = tf_seed
+        self.model = self.define_model()
         self.SMC_tools = SMC_functions.SMCtools(num_parties=num_parties, party_id=party_id,
                                                 num_participating_parties=num_parties,
                                                 secure_aggregation_parameter_k=num_parties - 1,
@@ -25,23 +25,19 @@ class Party:
     def define_model(self):
         """ This function generates the NN model"""
 
+        # def my_init(shape, dtype=None):
+        #     return tf.keras.backend.random_normal(shape, dtype=dtype, seed=self.tf_seed)
+        # initializer = tf.keras.initializers.GlorotUniform(seed=self.tf_seed)
+        # initializer = tf.keras.initializers.Zeros()
+
         model = keras.Sequential([
             layers.InputLayer(input_shape=[28, 28]),
-
-            #             # Data Augmentation
-            #             preprocessing.RandomFlip('horizontal'),
-            #             preprocessing.RandomContrast(0.5),
-
-            #             # Conv
-            #             layers.BatchNormalization(renorm=True),
-            #             layers.Conv2D(filters=64, kernel_size=3, activation='relu', padding='same'),
-            #             layers.MaxPool2D(),
 
             # Head
             layers.BatchNormalization(renorm=True),
             layers.Flatten(),
-            layers.Dense(128, activation='relu'),
-            layers.Dense(10),
+            layers.Dense(128, activation='relu'),  # , kernel_initializer=initializer or my_init (for no simulation)
+            layers.Dense(10),  # , kernel_initializer=initializer or my_init (for no simulation)
 
         ])
 
@@ -80,8 +76,6 @@ class Party:
             #  receive global model parameters
             # update local model by global_model_parameters
             self.model.set_weights(global_model_parameters)
-        else:
-            tf.random.set_seed(self.tf_seed)
         # locally update the model
         self.locally_update_model()
         model_parameters = self.locally_update_model()

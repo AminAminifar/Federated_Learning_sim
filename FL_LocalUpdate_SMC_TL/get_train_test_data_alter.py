@@ -3,6 +3,20 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 import scipy.io
 
+def load_data_for_transfer_model(path="test_train_data"):
+
+    x_train_transfer = np.load(f"{path}/x_train_transfer.npy")
+    y_train_transfer = np.load(f"{path}/y_train_transfer.npy")
+
+    x_test_transfer = np.load(f"{path}/x_test_transfer.npy")
+    y_test_transfer = np.load(f"{path}/y_test_transfer.npy")
+
+    x_val_transfer = np.load(f"{path}/x_val_transfer.npy")
+    y_val_transfer = np.load(f"{path}/y_val_transfer.npy")
+
+    return x_train_transfer, x_val_transfer, x_test_transfer, y_train_transfer, y_val_transfer, y_test_transfer
+
+
 def load_data_for_all_model(path="test_train_data"):
 
     x_train_other = np.load(f"{path}/x_train_other.npy")

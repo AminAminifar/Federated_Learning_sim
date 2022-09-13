@@ -25,17 +25,19 @@ class Party:
                                                 scenario=scenario)
 
     def predict_with_model_base(self):
-        model_base = keras.Sequential([
-            # base
-            layers.Conv2D(32, (3, 3), padding='same', activation='relu', kernel_initializer='he_uniform',
-                          input_shape=(28, 28, 1)),
-            layers.MaxPooling2D((2, 2)),
-        ])
-        checkpoint_path = "model_base/cp-{epoch:04d}.ckpt"
-        checkpoint_dir = os.path.dirname(checkpoint_path)
 
-        latest = tf.train.latest_checkpoint(checkpoint_dir)
-        model_base.load_weights(latest)
+        model_base = keras.models.load_model("model_base/model_base.h5")
+        # model_base = keras.Sequential([
+        #     # base
+        #     layers.Conv2D(32, (3, 3), padding='same', activation='relu', kernel_initializer='he_uniform',
+        #                   input_shape=(28, 28, 1)),
+        #     layers.MaxPooling2D((2, 2)),
+        # ])
+        # checkpoint_path = "model_base/cp-{epoch:04d}.ckpt"
+        # checkpoint_dir = os.path.dirname(checkpoint_path)
+
+        # latest = tf.train.latest_checkpoint(checkpoint_dir)
+        # model_base.load_weights(latest)
 
         self.data = model_base.predict(self.data_raw)
 
@@ -47,14 +49,11 @@ class Party:
         # initializer = tf.keras.initializers.GlorotUniform(seed=self.tf_seed)
         # initializer = tf.keras.initializers.Zeros()
 
-        model_head = keras.Sequential([
-
-            # Head
-            layers.Flatten(),
-            layers.Dense(100, activation='relu'),  # , kernel_initializer=initializer or my_init (for no simulation)
-            layers.Dense(10, activation='softmax')  # , kernel_initializer=initializer or my_init (for no simulation)
-
-        ])
+        model_head = tf.keras.models.Sequential([tf.keras.layers.Dense(32, kernel_regularizer=tf.keras.regularizers.L1(0.001)),
+                        tf.keras.layers.BatchNormalization(),
+                        tf.keras.layers.Activation('relu'),
+                        tf.keras.layers.Dropout(0.3),
+                        tf.keras.layers.Dense(2, activation=tf.nn.softmax)])
 
         model = model_head
 

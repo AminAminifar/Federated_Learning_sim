@@ -4,38 +4,15 @@ import numpy as np
 from pathlib import Path
 from sklearn.utils import shuffle
 import data_holder_party_class
-
+from get_train_test_data_alter import load_data_for_transfer_model
 
 # load data
-data_dir = Path('C:/Amin/Workspace/Data/fashion mnist')
 
-# load train data
-f = gzip.open(data_dir/'train-images-idx3-ubyte.gz','r')
-image_size = 28
-num_images = 60000
+x_train_transfer, x_val_transfer, x_test_transfer, y_train_transfer, y_val_transfer, y_test_transfer = load_data_for_transfer_model()
 
-
-f.read(16)
-buf = f.read(image_size * image_size * num_images)
-train_data_all = np.frombuffer(buf, dtype=np.uint8).astype(np.float32)
-train_data_all = train_data_all.reshape(num_images, image_size, image_size, 1)
-train_data = train_data_all[int(np.round(num_images*.5)):,:,:,:]
-
-# image = np.asarray(train_data[2]).squeeze()
-# plt.imshow(image, cmap="Greys")
-# plt.show()
-
-# labels
-f = gzip.open(data_dir/'train-labels-idx1-ubyte.gz','r')
-f.read(8)
-
-buf = f.read(num_images)
-train_labels_all = np.frombuffer(buf, dtype=np.uint8).astype(np.int64)
-# print(labels)
-train_labels = train_labels_all[int(np.round(num_images*.5)):]
+num_train_records = x_train_transfer.shape[0]
 
 # data information
-num_train_records = int(np.round(num_images*.5))  # 60000
 train_data_record_indices = range(0, num_train_records)
 train_data_record_indices_shuffled = shuffle(train_data_record_indices, random_state=0)
 
@@ -48,8 +25,8 @@ def generate_parties(num_data_holder_parties, tf_seed, num_local_updates, scenar
 
     parties = []
     for i in range(num_data_holder_parties):
-        parties.append(data_holder_party_class.Party(data=train_data[chunk_indices[i]],
-                                                     data_labels=train_labels[chunk_indices[i]],
+        parties.append(data_holder_party_class.Party(data=x_train_transfer[chunk_indices[i]],
+                                                     data_labels=y_train_transfer[chunk_indices[i]],
                                                      tf_seed=tf_seed,
                                                      num_local_updates=num_local_updates,
                                                      num_parties=num_data_holder_parties,

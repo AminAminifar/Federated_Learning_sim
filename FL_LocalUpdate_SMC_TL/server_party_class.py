@@ -20,14 +20,11 @@ class Server:
     def define_model(self):
         """ This function generates the NN model"""
 
-        model_head = keras.Sequential([
-
-            # Head
-            layers.Flatten(),
-            layers.Dense(100, activation='relu'),
-            layers.Dense(10, activation='softmax')
-
-        ])
+        model_head = tf.keras.models.Sequential([tf.keras.layers.Dense(32, kernel_regularizer=tf.keras.regularizers.L1(0.001)),
+                tf.keras.layers.BatchNormalization(),
+                tf.keras.layers.Activation('relu'),
+                tf.keras.layers.Dropout(0.3),
+                tf.keras.layers.Dense(2, activation=tf.nn.softmax)])
 
         self.model = model_head
 

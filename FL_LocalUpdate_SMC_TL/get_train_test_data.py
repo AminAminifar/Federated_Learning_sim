@@ -2,7 +2,21 @@ import h5py
 import numpy as np
 from sklearn.model_selection import train_test_split
 
-def load_data_for_base_model(path="test_train_data"):
+
+def load_data_for_transfer_model(path="test_train_data"):
+
+    x_train_transfer = np.load(f"{path}/x_train_transfer.npy")
+    y_train_transfer = np.load(f"{path}/y_train_transfer.npy")
+
+    x_test_transfer = np.load(f"{path}/x_test_transfer.npy")
+    y_test_transfer = np.load(f"{path}/y_test_transfer.npy")
+
+    x_val_transfer = np.load(f"{path}/x_val_transfer.npy")
+    y_val_transfer = np.load(f"{path}/y_val_transfer.npy")
+
+    return x_train_transfer, x_val_transfer, x_test_transfer, y_train_transfer, y_val_transfer, y_test_transfer
+
+def load_data_for_all_model(path="test_train_data"):
 
     x_train_other = np.load(f"{path}/x_train_other.npy")
     x_val_other = np.load(f"{path}/x_val_other.npy")
@@ -11,7 +25,11 @@ def load_data_for_base_model(path="test_train_data"):
     y_val_other = np.load(f"{path}/y_val_other.npy")
     y_test_other = np.load(f"{path}/y_test_other.npy")
 
-    return x_train_other, x_val_other, x_test_other, y_train_other, y_val_other, y_test_other
+    x_test_transfer = np.load(f"{path}/x_test_transfer.npy")
+    y_test_transfer = np.load(f"{path}/y_test_transfer.npy")
+
+    return x_train_other, x_val_other, x_test_other, y_train_other, y_val_other, y_test_other, x_test_transfer, y_test_transfer
+
 
 def generate_train_test_data(path):
 
@@ -64,14 +82,6 @@ def generate_train_test_data(path):
     x_test_other=x_test[:,2*window:]
     y_test_other=y_test
 
-    np.save("test_train_data/x_train_other.npy", x_train_other)
-    np.save("test_train_data/x_test_other.npy", x_test_other)
-    np.save("test_train_data/x_val_other.npy", x_val_other)
-
-    np.save("test_train_data/y_train_other.npy", y_train_other)
-    np.save("test_train_data/y_test_other.npy", y_test_other)
-    np.save("test_train_data/y_val_other.npy", y_val_other)
-
     #eglass electrodes
     x_train_eglass=x_train[:,0:2*window]
     x_val_eglass=x_val[:,0:2*window]
@@ -95,6 +105,15 @@ def generate_train_test_data(path):
     x_train = np.reshape(x_train, (np.shape(x_train)[0], size, 1))
     x_val = np.reshape(x_val, (np.shape(x_val)[0], size, 1))
     x_test = np.reshape(x_test, (np.shape(x_test)[0], size, 1))
+
+
+    np.save("test_train_data/x_train_other.npy", x_train_other)
+    np.save("test_train_data/x_test_other.npy", x_test_other)
+    np.save("test_train_data/x_val_other.npy", x_val_other)
+
+    np.save("test_train_data/y_train_other.npy", y_train_other)
+    np.save("test_train_data/y_test_other.npy", y_test_other)
+    np.save("test_train_data/y_val_other.npy", y_val_other)
 
     np.save("test_train_data/x_train_transfer.npy", x_train)
     np.save("test_train_data/x_test_transfer.npy", x_test)

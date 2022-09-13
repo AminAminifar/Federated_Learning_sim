@@ -16,7 +16,6 @@ def load_data_for_transfer_model(path="test_train_data"):
 
     return x_train_transfer, x_val_transfer, x_test_transfer, y_train_transfer, y_val_transfer, y_test_transfer
 
-
 def load_data_for_all_model(path="test_train_data"):
 
     x_train_other = np.load(f"{path}/x_train_other.npy")

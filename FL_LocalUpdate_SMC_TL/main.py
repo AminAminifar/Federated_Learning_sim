@@ -1,29 +1,71 @@
 # import server_party_class
 # import generate_parties
-# import os
+import os
 # from pathlib import Path
 # import gzip
 # import numpy as np
 # from tensorflow import keras
 # from tensorflow.keras import layers
 # from matplotlib import pyplot as plt
-# import tensorflow as tf
+import tensorflow as tf
 
-from get_train_test_data import generate_train_test_data
+from get_train_test_data_alter import generate_train_test_data, load_data_for_all_model
+from model import get_all_model
 
-# os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+
+final_score_other = []
 
 # generate test and train data and save those in test_train_data folder
+print("1-generate test and train data and save those in test_train_data folder")
 generate_train_test_data(path="dataset")
 
-# # load test data
+# load data for training a base modek
+print("2-load data for training the all model")
+x_train_other, x_val_other, x_test_other, y_train_other, y_val_other, y_test_other, x_test_transfer, y_test_transfer = load_data_for_all_model(path="test_train_data")
+
+print(x_train_other.shape)
+print(y_train_other.shape)
+
+print("3-load all model")
+model_base, model_head = get_all_model(head_size=32)
+
+model_other = tf.keras.Sequential(
+        [model_base, model_head]
+)
+model_other.compile(optimizer='adam', loss='SparseCategoricalCrossentropy', metrics=['accuracy'])
+
+# train the all model
+
+checkpoint_path = "model_base/cp.ckpt"
+checkpoint_dir = os.path.dirname(checkpoint_path)
+
+model_checkpoint_callback = tf.keras.callbacks.ModelCheckpoint(
+    filepath=checkpoint_path,
+    save_weights_only=True,
+    monitor='val_accuracy',
+    mode='max',
+    save_best_only=True)
+
+print("4-train all model")
+history = model_other.fit(x_train_other, y_train_other, validation_data=(x_val_other, y_val_other), batch_size=16, epochs=1, verbose=1, callbacks=[model_checkpoint_callback])
+
+
+
+print("5-evaluate the all model")
+score = model_other.evaluate(x_test_transfer, y_test_transfer, verbose=0)
+print("all_other_score:", score)
+final_score_other.append(score[1])
+
+print("6-save base model")
+
+# load test data
 # data_dir = Path('C:/Amin/Workspace/Data/fashion mnist')
 
 # # load test data
 # f = gzip.open(data_dir/'t10k-images-idx3-ubyte.gz','r')
 # image_size = 28
 # num_images = 10000
-
 
 # f.read(16)
 # buf = f.read(image_size * image_size * num_images)

@@ -8,7 +8,7 @@ import tensorflow as tf
 from sklearn.metrics import accuracy_score, recall_score, precision_score, f1_score
 
 # from get_train_test_data_alter import generate_train_test_data, load_data_for_all_model
-from get_train_test_data_alter import generate_train_test_data, load_data_for_all_model
+from get_train_test_data import generate_train_test_data, load_data_for_all_model
 from model import get_all_model
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
@@ -51,7 +51,7 @@ def run(argv):
         model_other.compile(optimizer='adam', loss='SparseCategoricalCrossentropy', metrics=['accuracy'])
 
         print("4-train all model")
-        history = model_other.fit(x_train_other, y_train_other, validation_data=(x_val_other, y_val_other), batch_size=16, epochs=1, verbose=1)
+        history = model_other.fit(x_train_other, y_train_other, validation_data=(x_val_other, y_val_other), batch_size=16, epochs=10, verbose=1)
 
         print("5-evaluate the all model")
         score = model_other.evaluate(x_test_transfer, y_test_transfer, verbose=0)
@@ -76,7 +76,7 @@ def run(argv):
 
         # repeat training process (as the interface)
         global_model_parameters = None
-        num_epoch = 1  # 100
+        num_epoch = 100  # 100
         test_loss, test_acc = np.zeros(num_epoch), np.zeros(num_epoch)
         for epoch in range(num_epoch):
             print("epoch", epoch)
